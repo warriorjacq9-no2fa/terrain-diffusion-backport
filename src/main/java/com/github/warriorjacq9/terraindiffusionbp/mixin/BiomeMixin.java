@@ -15,17 +15,14 @@ public abstract class BiomeMixin {
 	public abstract float getTemperature();
 
 	@Shadow
-	public abstract boolean hasPrecipitation();
+	public abstract Biome.Precipitation getPrecipitation();
 
 	@Inject(method = "getPrecipitation", at = @At("HEAD"), cancellable = true)
-	private void preventHighAltitudeSnow(CallbackInfoReturnable<Biome.RainType> cir) {
-		if(!this.hasPrecipitation()) {
-			cir.setReturnValue(Biome.RainType.NONE);
-			return;
-		}
-
-		if(this.getTemperature() >= 0.15F) {
-			cir.setReturnValue(Biome.RainType.RAIN);
+	private void preventHighAltitudeSnow(CallbackInfoReturnable<Biome.Precipitation> cir) {
+		if(this.getPrecipitation() == Biome.Precipitation.NONE) {
+			cir.setReturnValue(Biome.Precipitation.NONE);
+		} else if(this.getTemperature() >= 0.15F) {
+			cir.setReturnValue(Biome.Precipitation.RAIN);
 		}
 	}
 }

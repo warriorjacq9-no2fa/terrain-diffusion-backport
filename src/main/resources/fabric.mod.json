@@ -1,31 +1,32 @@
 {
-	"schemaVersion": 1,
-	"id": "terrain-diffusion-mc-backport",
-	"version": "${version}",
-	"name": "Terrain Diffusion MC backport",
-	"description": "This is an example description! Tell everyone what your mod is about!",
-	"authors": [
-		"Me!"
-	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/terrain-diffusion-mc-backport/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"com.github.warriorjacq9.terraindiffusionbp.TerrainDiffusionMCBackport"
-		]
-	},
-	"mixins": [
-		"terrain-diffusion-mc-backport.mixins.json"
-	],
-	"depends": {
-		"fabricloader": ">=0.19.2",
-		"minecraft": "~1.16.5",
-		"java": ">=8",
-		"fabric": "*"
-	}
+  "schemaVersion": 1,
+  "id": "terrain-diffusion-mc-backport",
+  "version": "${version}",
+  "name": "Terrain Diffusion MC backport",
+  "description": "Terrain Diffusion in Minecraft",
+  "authors": [
+    "Alexander Goslin",
+    "Jack Flusche"
+  ],
+  "contact": {
+    "homepage": "https://arxiv.org/abs/2512.08309",
+    "sources": "https://github.com/warriorjacq9-no2fa/terrain-diffusion-backport/"
+  },
+  "license": "MIT",
+  "icon": "assets/terrain-diffusion-mc-backport/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.github.warriorjacq9.terraindiffusionbp.TerrainDiffusionMCBackport"
+    ]
+  },
+  "mixins": [
+    "terrain-diffusion-mc-backport.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "minecraft": "~1.16.5",
+    "java": ">=8",
+    "fabric": "*"
+  }
 }

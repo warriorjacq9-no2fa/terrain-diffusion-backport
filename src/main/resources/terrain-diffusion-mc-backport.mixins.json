@@ -3,7 +3,7 @@
 	"package": "com.github.warriorjacq9.terraindiffusionbp.mixin",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
-		"ExampleMixin"
+		"BiomeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
