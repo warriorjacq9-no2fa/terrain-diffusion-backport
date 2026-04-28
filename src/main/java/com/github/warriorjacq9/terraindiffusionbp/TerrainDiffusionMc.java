@@ -15,7 +15,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import java.net.URI;
 import net.minecraft.util.Identifier;
@@ -49,7 +51,7 @@ public class TerrainDiffusionMc implements ModInitializer {
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> ExplorerServer.stop());
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) ->
                 dispatcher.register(literal("td-explore").executes(TerrainDiffusionMc::executeExplore))
         );
     }
@@ -58,9 +60,11 @@ public class TerrainDiffusionMc implements ModInitializer {
         try {
             int port = ExplorerServer.startIfNotRunning();
             String url = "http://localhost:" + port;
-            MutableText link = Text.literal(url)
-                    .styled(s -> s.withClickEvent(new ClickEvent.OpenUrl(URI.create(url)))
-                                  .withUnderline(true));
+            MutableText link = new LiteralText(url);
+            Style linkStyle = Style.EMPTY
+                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                .withUnderline(true);
+            link.setStyle(linkStyle);
             ctx.getSource().sendFeedback(
                     () -> Text.literal("Terrain Explorer: ").append(link),
                     false);
