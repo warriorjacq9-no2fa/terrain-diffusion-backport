@@ -8,7 +8,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -27,11 +26,6 @@ public class TerrainDiffusionBiomeSource extends BiomeSource {
                         RegistryLookupCodec.of(Registry.BIOME_KEY)
                                 .forGetter(s -> s.biomeRegistry)
                 ).apply(instance, instance.stable(TerrainDiffusionBiomeSource::new)));
-
-    // Custom biome keys that exist in your data pack — keep as-is if defined
-    private static final RegistryKey<Biome> FOREST_SPARSE  = RegistryKey.of(Registry.BIOME_KEY, new net.minecraft.util.Identifier("terrain-diffusion-mc", "forest_sparse"));
-    private static final RegistryKey<Biome> TAIGA_SPARSE   = RegistryKey.of(Registry.BIOME_KEY, new net.minecraft.util.Identifier("terrain-diffusion-mc", "taiga_sparse"));
-    private static final RegistryKey<Biome> SNOWY_TAIGA_SPARSE = RegistryKey.of(Registry.BIOME_KEY, new net.minecraft.util.Identifier("terrain-diffusion-mc", "snowy_taiga_sparse"));
 
     private final Registry<Biome> biomeRegistry;
     private Map<Short, Biome> biomeIdMap = null;
@@ -83,9 +77,9 @@ public class TerrainDiffusionBiomeSource extends BiomeSource {
                     entry((short) 44, biomeRegistry.getOrThrow(BiomeKeys.OCEAN)),
                     entry((short) 46, biomeRegistry.getOrThrow(BiomeKeys.COLD_OCEAN)),
                     entry((short) 48, biomeRegistry.getOrThrow(BiomeKeys.FROZEN_OCEAN)),
-                    entry((short) 108, biomeRegistry.getOrThrow(FOREST_SPARSE)),
-                    entry((short) 115, biomeRegistry.getOrThrow(TAIGA_SPARSE)),
-                    entry((short) 116, biomeRegistry.getOrThrow(SNOWY_TAIGA_SPARSE))
+                    entry((short) 108, biomeRegistry.getOrThrow(BiomeKeys.FOREST)),
+                    entry((short) 115, biomeRegistry.getOrThrow(BiomeKeys.TAIGA)),
+                    entry((short) 116, biomeRegistry.getOrThrow(BiomeKeys.SNOWY_TAIGA))
             );
     }
 
