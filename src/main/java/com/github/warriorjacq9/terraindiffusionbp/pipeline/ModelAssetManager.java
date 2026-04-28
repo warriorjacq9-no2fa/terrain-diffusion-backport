@@ -112,7 +112,7 @@ public final class ModelAssetManager {
         Path temporaryAssetPath = localAssetPath.resolveSibling(localAssetPath.getFileName() + ".tmp");
         LOG.info("Downloading model asset '{}' ({})",
                 localAssetPath.getFileName(), humanReadableBytes(assetMetadata.sizeBytes));
-        URL url = new URL(assetMetadata.url);
+        URL url = URI.create(assetMetadata.url).toURL();
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
         conn.setConnectTimeout(15000);
