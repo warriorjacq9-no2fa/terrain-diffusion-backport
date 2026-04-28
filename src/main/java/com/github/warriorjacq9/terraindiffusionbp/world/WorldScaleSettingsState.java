@@ -1,7 +1,6 @@
 package com.github.warriorjacq9.terraindiffusionbp.world;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
 /**
@@ -10,31 +9,13 @@ import net.minecraft.world.PersistentState;
  * <p>This is stored in the world save via Minecraft's persistent state manager.
  */
 public final class WorldScaleSettingsState extends PersistentState {
-    private static final Codec<WorldScaleSettingsState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.optionalFieldOf("scale", WorldScaleManager.DEFAULT_SCALE).forGetter(WorldScaleSettingsState::getScale),
-            Codec.BOOL.optionalFieldOf("explicit_scale", false).forGetter(WorldScaleSettingsState::hasExplicitScale)
-    ).apply(instance, WorldScaleSettingsState::new));
+    public static final String ID = "world_scale_settings";
+    public WorldScaleSettingsState() {
+        super(ID);
+    }
 
     private int scale;
     private boolean explicitScale;
-
-    private WorldScaleSettingsState(int configuredScale, boolean hasExplicitScale) {
-        this.scale = WorldScaleManager.clampScale(configuredScale);
-        this.explicitScale = hasExplicitScale;
-    }
-
-    /**
-     * Creates a default state for worlds that do not yet have saved terrain diffusion settings.
-     */
-    public static WorldScaleSettingsState createDefault() {
-        return new WorldScaleSettingsState(WorldScaleManager.DEFAULT_SCALE, false);
-    }
-
-    /**
-     * Type descriptor used by the persistent state manager.
-     */
-    public static final PersistentStateType<WorldScaleSettingsState> TYPE =
-            new PersistentStateType<>("terrain_diffusion_world_settings", WorldScaleSettingsState::createDefault, CODEC, null);
 
     /**
      * Returns the currently persisted world scale.
@@ -57,5 +38,26 @@ public final class WorldScaleSettingsState extends PersistentState {
         this.scale = WorldScaleManager.clampScale(configuredScale);
         this.explicitScale = true;
         markDirty();
+    }
+
+    @Override
+    public void fromTag(NbtCompound tag) {
+        if(tag.contains("scale")) {
+            scale = WorldScaleManager.clampScale(tag.getInt("scale"));
+        } else {
+            scale = WorldScaleManager.DEFAULT_SCALE;
+        }
+        if(tag.contains("explicit_scale")) {
+            explicitScale = tag.getBoolean("explicit_scale");
+        } else {
+            explicitScale = false;
+        }
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        nbt.putInt("scale", scale);
+        nbt.putBoolean("explicit_scale", explicitScale);
+        return nbt;
     }
 }
