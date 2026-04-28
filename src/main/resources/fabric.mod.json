@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "terrain-diffusion-mc-backport",
+  "id": "terrain-diffusion-mc",
   "version": "${version}",
   "name": "Terrain Diffusion MC backport",
   "description": "Terrain Diffusion in Minecraft",
@@ -13,7 +13,7 @@
     "sources": "https://github.com/warriorjacq9-no2fa/terrain-diffusion-backport/"
   },
   "license": "MIT",
-  "icon": "assets/terrain-diffusion-mc-backport/icon.png",
+  "icon": "assets/terrain-diffusion-mc/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -21,7 +21,7 @@
     ]
   },
   "mixins": [
-    "terrain-diffusion-mc-backport.mixins.json"
+    "terrain-diffusion-mc.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=0.19.2",
