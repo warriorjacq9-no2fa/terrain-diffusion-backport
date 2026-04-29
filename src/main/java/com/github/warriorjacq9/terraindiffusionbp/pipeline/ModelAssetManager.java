@@ -191,7 +191,7 @@ public final class ModelAssetManager {
         boolean shouldLogProgress = expectedSizeBytes >= PROGRESS_LOG_THRESHOLD_BYTES;
         byte[] copyBuffer = new byte[256 * 1024];
         long downloadedBytes = 0L;
-        int nextProgressPercent = 10;
+        int nextProgressPercent = 5;
         int readCount;
         while ((readCount = responseStream.read(copyBuffer)) != -1) {
             fileOutputStream.write(copyBuffer, 0, readCount);

@@ -18,8 +18,6 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import java.net.URI;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -27,9 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class TerrainDiffusionMc implements ModInitializer {
+public class TerrainDiffusionMCBackport implements ModInitializer {
     public static final String MOD_ID = "terrain-diffusion-mc";
-    private static final Logger LOG = LoggerFactory.getLogger(TerrainDiffusionMc.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TerrainDiffusionMCBackport.class);
 
     @Override
     public void onInitialize() {
@@ -52,7 +50,7 @@ public class TerrainDiffusionMc implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> ExplorerServer.stop());
 
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) ->
-                dispatcher.register(literal("td-explore").executes(TerrainDiffusionMc::executeExplore))
+                dispatcher.register(literal("td-explore").executes(TerrainDiffusionMCBackport::executeExplore))
         );
     }
 
@@ -66,11 +64,11 @@ public class TerrainDiffusionMc implements ModInitializer {
                 .withUnderline(true);
             link.setStyle(linkStyle);
             ctx.getSource().sendFeedback(
-                    () -> Text.literal("Terrain Explorer: ").append(link),
+                    new LiteralText("Terrain Explorer: ").append(link),
                     false);
         } catch (Exception e) {
             LOG.error("Failed to start terrain explorer", e);
-            ctx.getSource().sendError(Text.literal("Failed to start terrain explorer: " + e.getMessage()));
+            ctx.getSource().sendError(new LiteralText("Failed to start terrain explorer: " + e.getMessage()));
         }
         return 1;
     }

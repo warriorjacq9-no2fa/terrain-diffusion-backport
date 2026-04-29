@@ -18,9 +18,7 @@ public abstract class BiomeMixin {
 
 	@Inject(method = "getPrecipitation", at = @At("HEAD"), cancellable = true)
 	private void preventHighAltitudeSnow(CallbackInfoReturnable<Biome.Precipitation> cir) {
-		if(this.getPrecipitation() == Biome.Precipitation.NONE) {
-			cir.setReturnValue(Biome.Precipitation.NONE);
-		} else if(this.getTemperature() >= 0.15F) {
+		if(this.getTemperature() >= 0.15F) {
 			cir.setReturnValue(Biome.Precipitation.RAIN);
 		}
 	}

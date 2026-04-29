@@ -44,13 +44,20 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-	implementation "org.slf4j:slf4j-api:2.0.17"
+	implementation "org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1"
+	implementation "org.apache.logging.log4j:log4j-core:2.23.1"
 	implementation files("libs/onnxruntime-dml.jar")
 	
 }
 
 processResources {
 	inputs.property "version", project.version
+
+	from(generatedManifestDirectory) {
+		include 'model-assets-manifest.json'
+		into '' // puts it at root of resources (/)
+	}
+	dependsOn "generateModelAssetManifest"
 
 	filesMatching("fabric.mod.json") {
 		expand "version": inputs.properties.version
@@ -94,4 +101,81 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+tasks.register('generateModelAssetManifest') {
+	inputs.property('modelRepositorySlug', modelRepositorySlug)
+	inputs.property('modelRepositoryRevision', modelRepositoryRevision)
+	outputs.file(generatedManifestFile)
+
+	doLast {
+		generatedManifestDirectory.mkdirs()
+
+		String apiUrl = "https://huggingface.co/api/models/${modelRepositorySlug}/revision/${modelRepositoryRevision}?blobs=true"
+		Map modelInfo = new JsonSlurper().parseText(new URL(apiUrl).getText('UTF-8')) as Map
+		List siblings = modelInfo.siblings as List
+
+		List<String> requiredFiles = [
+				'base_model.onnx',
+				'coarse_model.onnx',
+				'decoder_model.onnx',
+				'pipeline_data.json',
+				'world_pipeline_config.json'
+		]
+
+		Map<String, Object> assetEntries = [:]
+		for (String requiredFileName : requiredFiles) {
+			Map siblingEntry = siblings.find { it.rfilename == requiredFileName } as Map
+			if (siblingEntry == null) {
+				throw new GradleException("Required model asset missing from HF commit ${modelRepositoryRevision}: ${requiredFileName}")
+			}
+
+			String resolveUrl = "https://huggingface.co/${modelRepositorySlug}/resolve/${modelRepositoryRevision}/${requiredFileName}?download=true"
+			long expectedSizeBytes = ((Number) siblingEntry.size).longValue()
+			String expectedSha256
+			if (siblingEntry.lfs instanceof Map && siblingEntry.lfs.sha256 != null) {
+				expectedSha256 = siblingEntry.lfs.sha256 as String
+			} else {
+				byte[] remoteFileBytes = new URL(resolveUrl).bytes
+				expectedSha256 = sha256Hex(remoteFileBytes)
+			}
+
+			assetEntries[requiredFileName] = [
+					sha256: expectedSha256,
+					sizeBytes: expectedSizeBytes,
+					url: resolveUrl
+			]
+		}
+
+		Map<String, Object> manifestPayload = [
+				repositorySlug: modelRepositorySlug,
+				revision: modelRepositoryRevision,
+				assets: assetEntries
+		]
+		generatedManifestFile.text = JsonOutput.prettyPrint(JsonOutput.toJson(manifestPayload))
+	}
+}
+
+def isWindows = System.getProperty('os.name').toLowerCase().startsWith('windows')
+def gradlewExecutable = rootProject.file(isWindows ? 'gradlew.bat' : 'gradlew').absolutePath
+
+['Cuda', 'Dml', 'Cpu'].each { variant ->
+	tasks.register("build${variant}", Exec) {
+		workingDir rootProject.projectDir
+		commandLine gradlewExecutable, 'build', "-Puse${variant}=true"
+	}
+}
+
+tasks.register('buildAll') {
+	dependsOn 'buildCuda', 'buildDml', 'buildCpu'
+}
+
+String sha256Hex(byte[] fileBytes) {
+	MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
+	byte[] digestBytes = messageDigest.digest(fileBytes)
+	StringBuilder hexBuilder = new StringBuilder(digestBytes.length * 2)
+	for (byte digestByte : digestBytes) {
+		hexBuilder.append(String.format('%02x', digestByte))
+	}
+	return hexBuilder.toString()
 }

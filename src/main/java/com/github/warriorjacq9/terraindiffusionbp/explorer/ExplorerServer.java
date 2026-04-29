@@ -101,6 +101,45 @@ public final class ExplorerServer {
         return SERVER_PORT;
     }
 
+    public static byte[] readAllBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        byte[] data = new byte[8192]; // 8KB buffer
+        int bytesRead;
+        while ((bytesRead = inputStream.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, bytesRead);
+        }
+
+        return buffer.toByteArray();
+    }
+
+    public static byte[] readNBytes(InputStream in, int len) throws IOException {
+        if (len < 0) {
+            throw new IllegalArgumentException("len < 0");
+        }
+
+        byte[] result = new byte[len];
+        int totalRead = 0;
+
+        while (totalRead < len) {
+            int bytesRead = in.read(result, totalRead, len - totalRead);
+            if (bytesRead == -1) {
+                break; // EOF reached
+            }
+            totalRead += bytesRead;
+        }
+
+        // If we filled the buffer completely, return it directly
+        if (totalRead == len) {
+            return result;
+        }
+
+        // Otherwise, return a trimmed array
+        byte[] truncated = new byte[totalRead];
+        System.arraycopy(result, 0, truncated, 0, totalRead);
+        return truncated;
+    }
+
     // =========================================================================
     // Handlers — direct port of server.py routes
     // =========================================================================
@@ -114,7 +153,7 @@ public final class ExplorerServer {
                 sendError(ex, 404, "index.html not found");
                 return;
             }
-            byte[] body = in.readAllBytes();
+            byte[] body = readAllBytes(in);
             ex.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
             ex.sendResponseHeaders(200, body.length);
             ex.getResponseBody().write(body);
@@ -498,7 +537,7 @@ public final class ExplorerServer {
 
     private static String readBody(HttpExchange ex, int maxBytes) throws IOException {
         try (InputStream in = ex.getRequestBody()) {
-            byte[] buf = in.readNBytes(maxBytes);
+            byte[] buf = readNBytes(in, maxBytes);
             return new String(buf, StandardCharsets.UTF_8);
         }
     }
