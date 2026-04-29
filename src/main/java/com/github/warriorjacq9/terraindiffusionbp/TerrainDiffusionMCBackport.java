@@ -60,8 +60,7 @@ public class TerrainDiffusionMCBackport implements ModInitializer {
             String url = "http://localhost:" + port;
             MutableText link = new LiteralText(url);
             Style linkStyle = Style.EMPTY
-                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
-                .withUnderline(true);
+                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
             link.setStyle(linkStyle);
             ctx.getSource().sendFeedback(
                     new LiteralText("Terrain Explorer: ").append(link),

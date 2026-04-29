@@ -1,5 +1,6 @@
 package com.github.warriorjacq9.terraindiffusionbp.world;
 
+import com.github.warriorjacq9.terraindiffusionbp.TerrainDiffusionMCBackport;
 import com.github.warriorjacq9.terraindiffusionbp.config.TerrainDiffusionConfig;
 import com.github.warriorjacq9.terraindiffusionbp.pipeline.LocalTerrainProvider;
 import com.github.warriorjacq9.terraindiffusionbp.pipeline.LocalTerrainProvider.HeightmapData;
@@ -18,11 +19,14 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Optional;
 
 public class TerrainDiffusionChunkGenerator extends ChunkGenerator {
+    private static final Logger LOG = LoggerFactory.getLogger(TerrainDiffusionChunkGenerator.class);
 
     public static final Codec<TerrainDiffusionChunkGenerator> CODEC =
             RecordCodecBuilder.create(instance -> instance.group(
@@ -38,6 +42,7 @@ public class TerrainDiffusionChunkGenerator extends ChunkGenerator {
     public TerrainDiffusionChunkGenerator(BiomeSource biomeSource, StructuresConfig structuresConfig) {
         super(biomeSource, biomeSource, structuresConfig, 0L);
         this.structuresConfig = structuresConfig;
+        LOG.info("Loaded");
     }
 
     @Override
@@ -102,6 +107,7 @@ public class TerrainDiffusionChunkGenerator extends ChunkGenerator {
 
     @Override
     public int getHeight(int x, int z, Heightmap.Type heightmap) {
+        LOG.info("getHeight called");
         int tileSize  = TerrainDiffusionConfig.tileSize();
         int tileShift = Integer.numberOfTrailingZeros(tileSize);
 
@@ -126,6 +132,7 @@ public class TerrainDiffusionChunkGenerator extends ChunkGenerator {
 
     @Override
     public BlockView getColumnSample(int x, int z) {
+        LOG.info("getColumnSample called");
         BlockState[] states = new BlockState[256];
         int height = getHeight(x, z, Heightmap.Type.OCEAN_FLOOR_WG);
         Arrays.fill(states, 0, Math.min(height + 1, 256), Blocks.STONE.getDefaultState());
