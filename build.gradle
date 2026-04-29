@@ -15,7 +15,7 @@ def withSourcesJar = project.hasProperty('withSourcesJar') && project.property('
 if ([useCuda, useDml, useCpu].count { it } > 1) {
 	throw new GradleException("Only one of -PuseCuda, -PuseDml, or -PuseCpu may be specified at a time.")
 }
-if (!useDml && !useCpu && !useCuda) useCuda = true
+if (!useDml && !useCpu && !useCuda) useDml = true
 
 println "Build variant: ${useCuda ? 'CUDA' : useDml ? 'DirectML (Windows)' : 'CPU'}"
 def modelRepositorySlug = 'xandergos/terrain-diffusion-30m-onnx'
@@ -24,7 +24,7 @@ def generatedManifestDirectory = layout.buildDirectory.dir('generated/model-asse
 def generatedManifestFile = new File(generatedManifestDirectory, 'model-assets-manifest.json')
 
 def buildVariant = useCuda ? 'cuda' : useDml ? 'windows' : 'cpu'
-version = project.mod_version
+version = "${project.mod_version}-${buildVariant}+${project.minecraft_version}"
 group = project.maven_group
 
 repositories {
@@ -33,6 +33,7 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+    flatDir { dirs 'libs'}
 }
 
 dependencies {
@@ -60,20 +61,28 @@ dependencies {
 }
 
 processResources {
-	inputs.property "version", project.version
+    dependsOn 'generateModelAssetManifest'
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
+    inputs.property "build_variant", buildVariant
+    filteringCharset "UTF-8"
+    from(generatedManifestFile) {
+        into ''
+    }
 
-	from(generatedManifestDirectory) {
-		include 'model-assets-manifest.json'
-		into '' // puts it at root of resources (/)
-	}
-	dependsOn "generateModelAssetManifest"
-
-	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
-	}
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "loader_version": project.loader_version
+    }
+    filesMatching("build-variant.properties") {
+        expand "build_variant": buildVariant
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
 	it.options.release = 8
 }
 
@@ -179,7 +188,7 @@ tasks.register('buildAll') {
 	dependsOn 'buildCuda', 'buildDml', 'buildCpu'
 }
 
-String sha256Hex(byte[] fileBytes) {
+static String sha256Hex(byte[] fileBytes) {
 	MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
 	byte[] digestBytes = messageDigest.digest(fileBytes)
 	StringBuilder hexBuilder = new StringBuilder(digestBytes.length * 2)
