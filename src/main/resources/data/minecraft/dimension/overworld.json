@@ -1,0 +1,13 @@
+{
+  "type": "terrain-diffusion-mc:terrain-diffusion",
+  "generator": {
+    "type": "terrain-diffusion-mc:terrain-diffusion",
+    "biome_source": {
+      "type": "terrain-diffusion-mc:terrain-diffusion"
+    },
+    "structures_config": {
+      "stronghold": null,
+      "structures": {}
+    }
+  }
+}

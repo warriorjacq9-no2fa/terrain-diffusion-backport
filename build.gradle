@@ -46,8 +46,17 @@ dependencies {
 
 	implementation "org.apache.logging.log4j:log4j-slf4j2-impl:2.23.1"
 	implementation "org.apache.logging.log4j:log4j-core:2.23.1"
-	implementation files("libs/onnxruntime-dml.jar")
-	
+
+	if (useCuda) {
+        implementation "com.microsoft.onnxruntime:onnxruntime_gpu:1.20.0"
+        include "com.microsoft.onnxruntime:onnxruntime_gpu:1.20.0"
+    } else if (useCpu) {
+        implementation "com.microsoft.onnxruntime:onnxruntime:1.20.0"
+        include "com.microsoft.onnxruntime:onnxruntime:1.20.0"
+    } else if (useDml) {
+        implementation 'com.microsoft.onnxruntime:onnxruntime-dml:1.0'
+        include 'com.microsoft.onnxruntime:onnxruntime-dml:1.0'
+    }
 }
 
 processResources {
@@ -178,4 +187,8 @@ String sha256Hex(byte[] fileBytes) {
 		hexBuilder.append(String.format('%02x', digestByte))
 	}
 	return hexBuilder.toString()
+}
+
+tasks.named("runServer") {
+    jvmArgs("-Xmx4G")
 }
