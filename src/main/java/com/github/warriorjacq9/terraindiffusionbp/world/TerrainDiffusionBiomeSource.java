@@ -62,16 +62,16 @@ public class TerrainDiffusionBiomeSource extends BiomeSource {
         map.put((short) 19, biomeRegistry.getOrThrow(BiomeKeys.MOUNTAINS));      // WINDSWEPT_HILLS -> MOUNTAINS
         map.put((short) 23, biomeRegistry.getOrThrow(BiomeKeys.JUNGLE));
         map.put((short) 26, biomeRegistry.getOrThrow(BiomeKeys.BADLANDS));
-        // (short) 29 MEADOW        - does not exist in 1.16.5, remap to PLAINS
+        // (short) 29 MEADOW        - does not exist in 1.16.5, remap
         map.put((short) 29, biomeRegistry.getOrThrow(BiomeKeys.PLAINS));
-        // (short) 31 GROVE         - does not exist in 1.16.5, remap to SNOWY_TAIGA
+        // (short) 31 GROVE         - does not exist in 1.16.5, remap
         map.put((short) 31, biomeRegistry.getOrThrow(BiomeKeys.SNOWY_TAIGA));
-        // (short) 32 SNOWY_SLOPES  - does not exist in 1.16.5, remap to SNOWY_TUNDRA
+        // (short) 32 SNOWY_SLOPES  - does not exist in 1.16.5, remap
         map.put((short) 32, biomeRegistry.getOrThrow(BiomeKeys.SNOWY_TUNDRA));
-        // (short) 33 FROZEN_PEAKS  - does not exist in 1.16.5, remap to FROZEN_OCEAN
-        map.put((short) 33, biomeRegistry.getOrThrow(BiomeKeys.FROZEN_OCEAN));
-        // (short) 35 STONY_PEAKS   - does not exist in 1.16.5, remap to MOUNTAINS
-        map.put((short) 35, biomeRegistry.getOrThrow(BiomeKeys.MOUNTAINS));
+        // (short) 33 FROZEN_PEAKS  - does not exist in 1.16.5, remap
+        map.put((short) 33, biomeRegistry.getOrThrow(BiomeKeys.ICE_SPIKES));
+        // (short) 35 STONY_PEAKS   - does not exist in 1.16.5, remap
+        map.put((short) 35, biomeRegistry.getOrThrow(BiomeKeys.GRAVELLY_MOUNTAINS));
         map.put((short) 41, biomeRegistry.getOrThrow(BiomeKeys.WARM_OCEAN));
         map.put((short) 44, biomeRegistry.getOrThrow(BiomeKeys.OCEAN));
         map.put((short) 46, biomeRegistry.getOrThrow(BiomeKeys.COLD_OCEAN));

@@ -208,11 +208,6 @@ public final class BiomeClassifier {
                     }
                 }
 
-                // Bare slope override for lowland/non-mountain cliffs
-                if (slopeBare && !isOcean && !mountains) {
-                    biome = hasSnow ? FROZEN_PEAKS : STONY_PEAKS;
-                }
-
                 out[idx] = biome;
             }
         }
