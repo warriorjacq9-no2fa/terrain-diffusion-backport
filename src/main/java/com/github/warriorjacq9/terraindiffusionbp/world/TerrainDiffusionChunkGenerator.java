@@ -34,7 +34,12 @@ public class TerrainDiffusionChunkGenerator extends ChunkGenerator {
                     BiomeSource.CODEC.fieldOf("biome_source")
                             .forGetter(g -> g.biomeSource),
                     StructuresConfig.CODEC.fieldOf("structures_config")
-                            .orElseGet(() -> new StructuresConfig(Optional.empty(), java.util.Collections.emptyMap()))
+                            .orElseGet(() ->
+                                    new StructuresConfig(
+                                            Optional.of(StructuresConfig.DEFAULT_STRONGHOLD),
+                                            StructuresConfig.DEFAULT_STRUCTURES
+                                    )
+                            )
                             .forGetter(g -> g.structuresConfig)
             ).apply(instance, instance.stable(TerrainDiffusionChunkGenerator::new)));
 
